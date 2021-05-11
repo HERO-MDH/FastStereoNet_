@@ -5,7 +5,7 @@ import copy
 import numpy as np
 import tensorflow as tf
 from lahc import LateAcceptanceHillClimber as climber
-
+from Latency import Latency_estimation
 import models.net_factory as nf
 import datetime
 import math
@@ -20,11 +20,11 @@ class HillClimber(climber):
         conn = sqlite3.connect(self.path)
         c = conn.cursor()
         c.execute('''CREATE TABLE bestss
-                     (num int, arc text, acc real, t_flops real, energy real)''')
+                     (num int, arc text, acc real, t_flops real, Latency real, energy real)''')
         conn.commit()
         c = conn.cursor()
         c.execute('''CREATE TABLE _all_
-                            (num int, arc text, acc real, t_flops real, energy real)''')
+                            (num int, arc text, acc real, t_flops real, Latency real, energy real)''')
         conn.commit()
         conn.close()
         super(HillClimber, self).__init__(state)
@@ -191,14 +191,16 @@ class HillClimber(climber):
                 raise ValueError('this is not appropriante')
         t_flops = train(self.data,self.state, self.num)
         acc = evaluate(self.data,self.state, self.num)
+        Latency=Latency_estimation(self.state)
         if acc == 0.0:
             e = math.inf
         else:
-            e = t_flops / acc
+            #e = t_flops / acc
+            e=Latency/acc
         statea = str(self.state)
         conn = sqlite3.connect(self.path)
         c = conn.cursor()
-        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?)''', [self.num, statea, acc, t_flops, e])
+        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
         conn.commit()
         conn.close()
         wr='HC'+str(self.num)+'=\t' + str(datetime.datetime.now()) + '\n'
@@ -209,7 +211,7 @@ class HillClimber(climber):
             self.best_model=copy.deepcopy(self.state)
             conn = sqlite3.connect(self.path)
             c = conn.cursor()
-            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?)''', [self.num, statea, acc, t_flops, e])
+            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
             conn.commit()
             conn.close()
             self.best = e

@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 from simanneal import Annealer
 from termcolor import colored
-
+from Latency import Latency_estimation
 import models.net_factory as nf
 import datetime
 import math
@@ -26,11 +26,11 @@ class SimulatedAnnealer(Annealer):
         conn=sqlite3.connect(self.path)
         c=conn.cursor()
         c.execute('''CREATE TABLE bestss
-                     (num int, arc text, acc real, t_flops real, energy real)''')
+                     (num int, arc text, acc real, t_flops real,Latency real, energy real)''')
         conn.commit()
         c = conn.cursor()
         c.execute('''CREATE TABLE _all_
-                            (num int, arc text, acc real, t_flops real, energy real)''')
+                            (num int, arc text, acc real, t_flops real,Latency real, energy real)''')
         conn.commit()
         conn.close()
         super(SimulatedAnnealer, self).__init__(state)
@@ -202,14 +202,16 @@ class SimulatedAnnealer(Annealer):
             self.first=False
             self.weights=weights
             acc = evaluate(self.data,self.state,self.num)
+            Latency=Latency_estimation(self.state)
         if acc==0.0:
             e=math.inf
         else:
-            e=t_flops/acc
+            #e=t_flops/acc
+            e=Latency/acc
         statea=str(self.state)
         conn = sqlite3.connect(self.path)
         c = conn.cursor()
-        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?)''', [self.num, statea, acc, t_flops, e])
+        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
         conn.commit()
         conn.close()
         with open(self.data.timefile, "a+") as handle:
@@ -218,7 +220,7 @@ class SimulatedAnnealer(Annealer):
         if e<self.best:
             conn = sqlite3.connect(self.path)
             c = conn.cursor()
-            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?)''',[self.num,statea,acc,t_flops,e])
+            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?,?)''',[self.num,statea,acc,t_flops,Latency,e])
             conn.commit()
             conn.close()
             self.best=e
