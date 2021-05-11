@@ -10,18 +10,18 @@ from data_handler import Data_handler
 flags = tf.app.flags
 
 flags.DEFINE_integer('batch_size', 8, 'Batch size.')
-flags.DEFINE_integer('num_iter', 10000, 'Total training iterations')
-flags.DEFINE_string('model_dir', 'C:\\Users\\mli01\\PycharmProjects\\Final_ICML\\time_results', 'Trained network dir')
+flags.DEFINE_integer('num_iter', 15, 'Total training iterations')
+flags.DEFINE_string('model_dir', 'C:\\Users\\Ali\\PycharmProjects\\Final_2d_stereo_matching\\results', 'Trained network dir')
 flags.DEFINE_string('data_version', 'kitti2015', 'kitti2012 or kitti2015')
-flags.DEFINE_string('data_root', 'C:\\Users\\mli01\\Desktop\\data_scene_flow1\\training', 'training dataset dir')
-flags.DEFINE_string('util_root', 'C:\\Users\\mli01\\Desktop\\data_scene_flow1', 'Binary training files dir')
+flags.DEFINE_string('data_root', 'C:\\Users\\Ali\\Downloads\\data_scene_flow\\training', 'training dataset dir')
+flags.DEFINE_string('util_root', 'C:\\Users\\Ali\\Downloads\\Stereo-Matching-master\\Kiuu', 'Binary training files dir')
 flags.DEFINE_string('net_type', 'win37_dep9', 'Network type: win37_dep9 pr win19_dep9')
 
 flags.DEFINE_integer('eval_size', 200, 'number of evaluation patchs per iteration')
 flags.DEFINE_integer('num_tr_img', 160, 'number of training images')
 flags.DEFINE_integer('num_val_img', 40, 'number of evaluation images')
 flags.DEFINE_integer('patch_size', 37, 'training patch size')
-flags.DEFINE_integer('num_val_loc', 5000, 'number of validation locations')
+flags.DEFINE_integer('num_val_loc', 50, 'number of validation locations')
 flags.DEFINE_integer('disp_range', 201, 'disparity range')
 flags.DEFINE_string('phase', 'train', 'train or evaluate')
 
