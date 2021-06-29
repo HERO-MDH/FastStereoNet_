@@ -189,7 +189,7 @@ class HillClimber(climber):
             ex = kernel_sum - num_node
             if ex != 36:
                 raise ValueError('this is not appropriante')
-        t_flops = train(self.data,self.state, self.num)
+        t_flops =train(self.data,self.state, self.num)
         acc = evaluate(self.data,self.state, self.num)
         Latency=Latency_estimation(self.state)
         if acc == 0.0:
@@ -200,7 +200,7 @@ class HillClimber(climber):
         statea = str(self.state)
         conn = sqlite3.connect(self.path)
         c = conn.cursor()
-        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
+        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
         conn.commit()
         conn.close()
         wr='HC'+str(self.num)+'=\t' + str(datetime.datetime.now()) + '\n'
@@ -211,7 +211,7 @@ class HillClimber(climber):
             self.best_model=copy.deepcopy(self.state)
             conn = sqlite3.connect(self.path)
             c = conn.cursor()
-            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
+            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
             conn.commit()
             conn.close()
             self.best = e

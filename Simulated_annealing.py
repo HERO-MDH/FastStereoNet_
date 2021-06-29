@@ -18,6 +18,7 @@ class SimulatedAnnealer(Annealer):
         self.last_model=None
         self.last_t_flops=None
         self.last_acc=None
+        self.last_latency=None
         self.first=True
         self.weights={}
         self.best=math.inf
@@ -168,6 +169,7 @@ class SimulatedAnnealer(Annealer):
         if self.state==self.last_model:
             acc=self.last_acc
             t_flops=self.last_t_flops
+            latency=self.last_latency
         else:
             has=False
             for i in self.state[1]:
@@ -202,16 +204,17 @@ class SimulatedAnnealer(Annealer):
             self.first=False
             self.weights=weights
             acc = evaluate(self.data,self.state,self.num)
-            Latency=Latency_estimation(self.state)
+            latency=Latency_estimation(self.state)
+            print('latency',latency)
         if acc==0.0:
             e=math.inf
         else:
             #e=t_flops/acc
-            e=Latency/acc
+            e=latency/acc
         statea=str(self.state)
         conn = sqlite3.connect(self.path)
         c = conn.cursor()
-        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?,?)''', [self.num, statea, acc, t_flops,Latency, e])
+        c.execute('''INSERT INTO _all_ VALUES (?,?,?,?,?,?)''', [self.num, statea, acc, t_flops,latency, e])
         conn.commit()
         conn.close()
         with open(self.data.timefile, "a+") as handle:
@@ -220,7 +223,7 @@ class SimulatedAnnealer(Annealer):
         if e<self.best:
             conn = sqlite3.connect(self.path)
             c = conn.cursor()
-            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?,?)''',[self.num,statea,acc,t_flops,Latency,e])
+            c.execute('''INSERT INTO bestss VALUES (?,?,?,?,?,?)''',[self.num,statea,acc,t_flops,latency,e])
             conn.commit()
             conn.close()
             self.best=e
@@ -230,6 +233,7 @@ class SimulatedAnnealer(Annealer):
 
         self.last_t_flops=copy.deepcopy(t_flops)
         self.last_acc=copy.deepcopy(acc)
+        self.last_latency=copy.deepcopy(latency)
 
         return e
 
